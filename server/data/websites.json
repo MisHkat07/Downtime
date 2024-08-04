@@ -1,0 +1,51 @@
+[
+  {
+    "url": "https://cansoft.com",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  },
+  {
+    "url": "https://cansoft.ca",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  },
+  {
+    "url": "https://www.google.com",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  },
+  {
+    "url": "https://www.gofrgfogle.com",
+    "status": {
+      "up": false,
+      "message": "Website is Down. Error: getaddrinfo ENOTFOUND www.gofrgfogle.com"
+    }
+  },
+  {
+    "url": "https://www.youtube.com",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  },
+  {
+    "url": "https://www.facebook.com",
+    "status": {
+      "up": false,
+      "message": "Website is Down. Error: connect ETIMEDOUT 157.240.1.35:443"
+    }
+  },
+  {
+    "url": "https://www.app.facilityvitals.com/",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  }
+]
