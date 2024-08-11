@@ -6,7 +6,7 @@
   "scripts": {
     "start": "concurrently \"npm run start-client\" \"npm run start-server\"",
     "start-client": "npm --prefix client run dev",
-    "start-server": "npm --prefix server start"
+    "start-server": "npm --prefix server run server"
   },
   "author": "",
   "license": "ISC",

@@ -4,7 +4,7 @@ const cors = require("cors");
 const fs = require("fs");
 const path = require("path");
 const nodemailer = require("nodemailer");
-require("dotenv").config(); 
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
@@ -107,7 +107,6 @@ const checkWebsiteStatus = async (website) => {
   }
 };
 
-
 const checkAllWebsites = async () => {
   for (const website of websites) {
     await checkWebsiteStatus(website);
@@ -119,6 +118,19 @@ setInterval(checkAllWebsites, 43200000);
 
 app.get("/websites", (req, res) => {
   res.json(websites);
+});
+
+app.delete("/remove", (req, res) => {
+  const { url } = req.body;
+  const index = websites.findIndex((website) => website.url === url);
+
+  if (index !== -1) {
+    websites.splice(index, 1);
+    saveWebsitesToFile();
+    res.json({ message: "Website removed from monitoring" });
+  } else {
+    res.status(404).json({ message: "Website not found" });
+  }
 });
 
 app.post("/search", async (req, res) => {
@@ -136,12 +148,18 @@ app.post("/search", async (req, res) => {
       });
       website = {
         url,
-        status: { up: true, message: `Website is Running. Status code: ${response.status}` },
+        status: {
+          up: true,
+          message: `Website is Running. Status code: ${response.status}`,
+        },
       };
     } catch (error) {
       website = {
         url,
-        status: { up: false, message: `Website is Down. Error: ${error.message}` },
+        status: {
+          up: false,
+          message: `Website is Down. Error: ${error.message}`,
+        },
       };
       sendEmailNotification(website); // Send email notification
     }

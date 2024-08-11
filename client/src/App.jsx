@@ -3,10 +3,11 @@ import axios from "axios";
 
 function App() {
   const [url, setUrl] = useState("");
-  const [websites, setWebsites] = useState([]);
   const [searchedWebsite, setSearchedWebsite] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetch, setFetch] = useState(true);
+  const [websites, setWebsites] = useState([]);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const fetchWebsites = async () => {
@@ -19,10 +20,10 @@ function App() {
       }
     };
 
-    const intervalId = setInterval(fetchWebsites, 10000); // Fetch every 1 minute
+    const intervalId = setInterval(fetchWebsites, 10000);
     fetchWebsites();
 
-    return () => clearInterval(intervalId); // Clean up interval on unmount
+    return () => clearInterval(intervalId);
   }, [fetch]);
 
   const handleSearch = async (e) => {
@@ -54,6 +55,7 @@ function App() {
 
   const handleAdd = async () => {
     if (searchedWebsite) {
+      setUrl("");
       try {
         await axios.post("http://localhost:5000/add", {
           url: searchedWebsite.url,
@@ -66,65 +68,110 @@ function App() {
     }
   };
 
+  const removeWebsite = async (url) => {
+    if (window.confirm("Are you sure you want to remove this website?")) {
+      try {
+        const response = await axios.delete("http://localhost:5000/remove", {
+          data: { url },
+        });
+        setMessage(response.data.message);
+        setFetch(true);
+      } catch (error) {
+        console.error("Error removing website:", error);
+        setMessage("Error removing website.");
+      }
+    }
+  };
+
   return (
-    <div className="min-h-screen flex flex-col items-center bg-gray-100 p-4">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mb-6">
-        <h1 className="text-2xl font-bold mb-4 text-center">
-          Website Status Checker
-        </h1>
-        <form onSubmit={handleSearch} className="flex flex-col space-y-4">
-          <input
-            type="text"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            placeholder="Enter website URL"
-            className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200"
-          >
-            Search Website
-          </button>
-        </form>
-        {loading && <p className="mt-4 text-center">Loading...</p>}
-        {searchedWebsite && (
-          <div className="mt-4 text-center">
-            {!loading && <p>Status: {searchedWebsite.status.message}</p>}
-            {!websites.some(
-              (website) => website.url === searchedWebsite.url
-            ) && (
+    <div className="min-h-screen font-sans flex flex-col items-center bg-gradient-to-r from-blue-500 to-purple-600 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-4xl">
+        <div className="mb-10">
+          {" "}
+          <h1 className="text-3xl font-bold mb-6 text-center text-blue-800">
+            Website Status Checker
+          </h1>
+          <form onSubmit={handleSearch} className="flex flex-col space-y-4">
+            <input
+              type="text"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="Enter website URL"
+              className="p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+            />
+            {url.length ? (
               <button
-                onClick={handleAdd}
-                className="mt-2 bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600 transition duration-200"
+                type="submit"
+                className="bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition duration-200"
               >
-                Add to Monitoring
+                Search Website
               </button>
+            ) : (
+              ""
             )}
-          </div>
-        )}
-      </div>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-4xl">
-        <h2 className="text-xl font-bold mb-4 text-center">
+          </form>
+          {loading && (
+            <p className="mt-4 text-center text-gray-600">Loading...</p>
+          )}
+          {searchedWebsite && (
+            <div className="mt-6 text-center">
+              {!loading && (
+                <p className="text-lg text-gray-700">
+                  Status: {searchedWebsite.status.message}
+                </p>
+              )}
+              {!websites.some(
+                (website) => website.url === searchedWebsite.url
+              ) && (
+                <button
+                  onClick={handleAdd}
+                  className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md hover:bg-green-600 transition duration-200"
+                >
+                  Add to Monitoring
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-500">
           Monitored Websites
         </h2>
         <table className="min-w-full table-auto">
           <thead>
-            <tr>
-              <th className="px-4 py-2 border">URL</th>
-              <th className="px-4 py-2 border">Status</th>
+            <tr className="bg-gray-100">
+              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 font-medium">
+                URL
+              </th>
+              <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 font-medium">
+                Status
+              </th>
+              <th className="px-6 py-3 border-b-2 border-gray-300"></th>
             </tr>
           </thead>
           <tbody>
             {websites.map((website, index) => (
-              <tr key={index}>
-                <td className="px-4 py-2 border">{website.url}</td>
+              <tr
+                key={index}
+                className="hover:bg-gray-100 transition duration-150"
+              >
+                <td className="px-6 py-4 border-b border-gray-300">
+                  {website.url}
+                </td>
                 <td
-                  className={`px-4 py-2 border ${
+                  className={`px-6 py-4 border-b border-gray-300 ${
                     website.status.up ? "text-green-600" : "text-red-600"
                   }`}
                 >
                   {website.status.message}
+                </td>
+                <td className="px-6 py-4 border-b border-gray-300 text-right">
+                  <button
+                    onClick={() => removeWebsite(website.url)}
+                    className="text-red-600 hover:text-red-800 font-semibold"
+                  >
+                    Remove
+                  </button>
                 </td>
               </tr>
             ))}
