@@ -15,6 +15,7 @@ function App() {
         const response = await axios.get("http://localhost:5000/websites");
         setWebsites(response.data);
         setFetch(false);
+        setSearchedWebsite("");
       } catch (error) {
         console.error("Error fetching websites:", error);
       }
@@ -61,6 +62,7 @@ function App() {
           url: searchedWebsite.url,
         });
         setSearchedWebsite(null);
+
         setFetch(true);
       } catch (error) {
         console.error("Error adding website:", error);
@@ -113,7 +115,7 @@ function App() {
           {loading && (
             <p className="mt-4 text-center text-gray-600">Loading...</p>
           )}
-          {searchedWebsite && (
+          {searchedWebsite && url.length ? (
             <div className="mt-6 text-center">
               {!loading && (
                 <p className="text-lg text-gray-700">
@@ -131,6 +133,8 @@ function App() {
                 </button>
               )}
             </div>
+          ) : (
+            ""
           )}
         </div>
 
@@ -156,7 +160,9 @@ function App() {
                 className="hover:bg-gray-100 transition duration-150"
               >
                 <td className="px-6 py-4 border-b border-gray-300">
-                  {website.url}
+                  <a href={website.url} className="text-blue-600">
+                    {website.url}
+                  </a>
                 </td>
                 <td
                   className={`px-6 py-4 border-b border-gray-300 ${

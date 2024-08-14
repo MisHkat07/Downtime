@@ -18,7 +18,7 @@ const saveWebsitesToFile = () => {
   fs.writeFileSync(websitesFilePath, JSON.stringify(websites, null, 2));
 };
 
-const sendEmail = async (recipient, emailType, data, cb) => {
+const sendEmail = async (recipients, emailType, data, cb) => {
   let transporter = nodemailer.createTransport({
     host: "smtp.webmyway.ca",
     port: 465,
@@ -42,7 +42,7 @@ const sendEmail = async (recipient, emailType, data, cb) => {
 
   let mailOptions = {
     from: `"Downtime" <${process.env.EMAIL}>`,
-    to: recipient,
+    to: recipients.join(","),
     subject: subject,
     text: text,
     html: html,
@@ -67,8 +67,13 @@ const sendEmail = async (recipient, emailType, data, cb) => {
 };
 
 const sendEmailNotification = (website) => {
-  sendEmail(
+  const recipients = [
     "mishkat606@gmail.com",
+    "mishkat506@gmail.com",
+    "mishkat@cansoft.com",
+  ];
+  sendEmail(
+    recipients,
     "websiteDown",
     { url: website.url, message: website.status.message },
     (result) => {
@@ -161,7 +166,7 @@ app.post("/search", async (req, res) => {
           message: `Website is Down. Error: ${error.message}`,
         },
       };
-      sendEmailNotification(website); // Send email notification
+      sendEmailNotification(website); 
     }
     searchCache[url] = website;
   }
@@ -180,5 +185,5 @@ app.post("/add", (req, res) => {
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
-  checkAllWebsites(); // Initial status check on startup
+  checkAllWebsites(); 
 });
