@@ -8,6 +8,7 @@ require("dotenv").config();
 
 const app = express();
 app.use(cors());
+
 app.use(express.json());
 
 const websitesFilePath = path.join(__dirname, "data", "websites.json");
@@ -49,28 +50,22 @@ const sendEmail = async (recipients, emailType, data, cb) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions, (err, info) => {
-      if (info) {
-        console.log("Message sent: %s", info);
-      }
-      if (err) {
-        console.log(err);
-        cb("error-" + err.message);
-      } else {
-        cb("sent");
-      }
-    });
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Message sent: %s", info.messageId);
+    cb("sent");
   } catch (error) {
-    console.log(error);
-    cb("error-" + JSON.stringify(error));
+    console.error("Error sending email:", error);
+    cb("error-" + error.message);
   }
 };
+
+
 
 const sendEmailNotification = (website) => {
   const recipients = [
     "mishkat606@gmail.com",
+    "safamarwa.naima@gmail.com",
     "mishkat506@gmail.com",
-    "mishkat@cansoft.com",
   ];
   sendEmail(
     recipients,
@@ -166,7 +161,7 @@ app.post("/search", async (req, res) => {
           message: `Website is Down. Error: ${error.message}`,
         },
       };
-      sendEmailNotification(website); 
+      // sendEmailNotification(website); 
     }
     searchCache[url] = website;
   }
@@ -178,12 +173,19 @@ app.post("/add", (req, res) => {
   if (!websites.some((website) => website.url === url)) {
     websites.push({ url, status: { up: null, message: "Checking..." } });
     saveWebsitesToFile();
+    checkAllWebsites();
   }
   res.json({ message: "Website added for monitoring" });
 });
 
+app.get("*", (req, res) => {
+  res.json(websites);
+});
+
+
 const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
+  // setInterval(checkAllWebsites, 43200000);
   checkAllWebsites(); 
 });

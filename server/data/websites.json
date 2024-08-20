@@ -1,12 +1,5 @@
 [
   {
-    "url": "https://cansoft.com",
-    "status": {
-      "up": true,
-      "message": "Website is Running. Status code: 200"
-    }
-  },
-  {
     "url": "https://cansoft.ca",
     "status": {
       "up": true,
@@ -22,6 +15,13 @@
   },
   {
     "url": "https://www.youtube.com",
+    "status": {
+      "up": true,
+      "message": "Website is Running. Status code: 200"
+    }
+  },
+  {
+    "url": "https://cansoft.com/",
     "status": {
       "up": true,
       "message": "Website is Running. Status code: 200"

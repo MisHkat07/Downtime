@@ -15,7 +15,6 @@ function App() {
         const response = await axios.get("http://localhost:5000/websites");
         setWebsites(response.data);
         setFetch(false);
-        setSearchedWebsite("");
       } catch (error) {
         console.error("Error fetching websites:", error);
       }
@@ -40,7 +39,7 @@ function App() {
     }
     if (!validatedUrl.includes("www.")) {
       const urlObj = new URL(validatedUrl);
-      validatedUrl = `${urlObj.protocol}//www.${urlObj.hostname}${urlObj.pathname}`;
+      validatedUrl = `${urlObj.protocol}//${urlObj.hostname}${urlObj.pathname}`;
     }
 
     try {
@@ -126,7 +125,7 @@ function App() {
                 (website) => website.url === searchedWebsite.url
               ) && (
                 <button
-                  onClick={handleAdd}
+                  onClick={() => handleAdd()}
                   className="mt-4 bg-green-500 text-white py-2 px-6 rounded-md hover:bg-green-600 transition duration-200"
                 >
                   Add to Monitoring
@@ -145,7 +144,7 @@ function App() {
           <thead>
             <tr className="bg-gray-100">
               <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 font-medium">
-                URL
+                URL ({websites?.length})
               </th>
               <th className="px-6 py-3 border-b-2 border-gray-300 text-left text-gray-600 font-medium">
                 Status
